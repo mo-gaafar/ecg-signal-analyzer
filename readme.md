@@ -1,6 +1,6 @@
 # ECG Signal Analyzer
 ## This was an assignment task for HEMN115 Fall 2020
-###Features:
+### Features:
 - Fast Fourier Transform
 - Full Navigation features
 - Play/Pause Button
