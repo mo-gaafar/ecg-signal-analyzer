@@ -8,12 +8,11 @@ import os
 import csv
 from random import randint
 import wfdb
-filename = None
-browsedfile = False
+
 
 class MainWindow(QtWidgets.QMainWindow):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs): #Initializes the Program
         super(MainWindow, self).__init__(*args, **kwargs)
 
 
@@ -22,6 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.graphWidget = pg.PlotWidget()
         #self.setCentralWidget(self.graphWidget)
         self.filename = None
+        self.filterStatus = 0
         #If No file opened, plot random points
         self.x = list(range(20))  # 20 time points
         self.y =[ 1 for _ in range(20)]  # 100 data points
@@ -53,12 +53,13 @@ class MainWindow(QtWidgets.QMainWindow):
         
         #Auto Pans with x value = 100
 
-
         self.graphWidget.setAutoPan(x=100, y=None)
 
         self.timer.stop()
 
         #Defining Buttons and GUI Events
+        self.MaxY = 100
+        self.MinY = 0
         self.CounterX = 0
         self.ZoominCount = 0
         self.graphWidget.setLimits(xMin = 0)
@@ -105,7 +106,7 @@ class MainWindow(QtWidgets.QMainWindow):
             print("started")
             #starts the graph
             self.timer.start()
-            self.graphWidget.setAutoPan(x=100, y=None)
+            self.graphWidget.setAutoPan(x=100, y=(self.MinY,self.MaxY))
 
         # if it is unchecked 
         else: 
@@ -121,9 +122,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.filename = self.filename[:-4] #removes .hea ending
 
-        record = wfdb.rdrecord(self.filename)
-        print(record.sig_len) #Prints the length of the selected signal
-        self.sigLength = record.sig_len #init signal length variable
+        self.record = wfdb.rdrecord(self.filename )
+        self.d_signal = self.record.adc()
+        self.record.adc(inplace = True)
+        self.MaxY = max(self.d_signal[:][0]) #Maximum Y Value in the ECG File
+        self.MinY = min(self.d_signal[:][0]) #Minimum Y Value in the ECG File
+
+        print(self.record.sig_len) #Prints the length of the selected signal
+        self.sigLength = self.record.sig_len #init signal length variable
+
+        self.CounterX = 0 #resets array counter whenever a new file is selected
 
         self.show
 
@@ -166,14 +174,19 @@ class MainWindow(QtWidgets.QMainWindow):
        else:
         self.CounterX +=1
         self.x.append(self.x[-1] + 1)
-        record = wfdb.rdrecord(self.filename )
-        d_signal = record.adc()
-        record.adc(inplace = True)
         
-        if self.sigLength > self.CounterX:
-            self.y.append(record.d_signal[self.CounterX][0])
-            self.data_line.setData(self.x,self.y)
-    
+
+        if self.sigLength > self.CounterX: #if signal array is not fully plotted do this
+            if self.filterStatus == 0:
+                self.y.append(self.record.d_signal[self.CounterX][0])
+                self.data_line.setData(self.x,self.y)
+            
+            #if self.filterStatus == 1:
+            
+            #if self.filterStatus == 2:
+                
+            #if self.filterStatus == 3:
+                
 def main():
     app = QtWidgets.QApplication(sys.argv)
     main = MainWindow()
