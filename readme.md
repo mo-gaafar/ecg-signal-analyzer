@@ -4,9 +4,8 @@
 - Fast Fourier Transform
 - Full Navigation features
 - Play/Pause Button
-- 4 Filtering Functions
+- 3 Filtering Functions
   * Low Pass
   * High Pass
-  * Band Stop
   * Band Pass
 - Opens Any ECG .hea file
