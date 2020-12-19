@@ -102,11 +102,9 @@
       </item>
       <item row="1" column="0">
        <widget class="QComboBox" name="comboBox">
-        <item>
-         <property name="text">
-          <string>Choose a Filter to Apply</string>
-         </property>
-        </item>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
         <item>
          <property name="text">
           <string>No Filter</string>
@@ -114,7 +112,7 @@
         </item>
         <item>
          <property name="text">
-          <string>Smoothing Filter</string>
+          <string>Band Pass Filter</string>
          </property>
         </item>
         <item>
@@ -125,11 +123,6 @@
         <item>
          <property name="text">
           <string>High Pass Filter</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Band Pass Filter</string>
          </property>
         </item>
        </widget>
