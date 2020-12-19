@@ -63,6 +63,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.CounterX = 0
         self.ZoominCount = 0
         self.graphWidget.setLimits(xMin = 0)
+        self.sigLength = 100
         #self.buttonpause = self.findChild(QPushButton, "pauseButton")
         #self.buttonpause.clicked.connect(self.clickedBtn)
 
