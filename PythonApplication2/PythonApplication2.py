@@ -22,19 +22,20 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.setCentralWidget(self.graphWidget)
         self.filename = None
         self.filterStatus = 0
+
        #initializing the 4 Plotting lines
 
-        self.x = list(range(20))  # 20 time points
-        self.y =[ 1 for _ in range(20)]  # 100 data points
+        self.x = list(range(1))  
+        self.y = list(range(1))  
         
-        self.x1 = list(range(20))
-        self.y1 = [ 1 for _ in range(20)]
+        self.x1 = list(range(1))
+        self.y1 = list(range(1))
 
-        self.x2 = list(range(20))
-        self.y2 = [ 1 for _ in range(20)]
+        self.x2 = list(range(1)) 
+        self.y2 = list(range(1))
 
-        self.x3 = list(range(20))
-        self.y3 = [ 1 for _ in range(20)]
+        self.x3 = list(range(1))
+        self.y3 = list(range(1))
 
         #Anti aliasing for prettier lines
         #pg.setConfigOptions(antialias = True)
@@ -82,13 +83,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.sigLength = 100
         self.filterIndex = 0
 
-        # Filter requirements.
-        self.T = 5         # Sample Period
-        self.fs = 300.0       # sample rate, Hz
-        self.cutoff = 100     # desired cutoff frequency of the filter, Hz ,      slightly higher than actual 1.2 Hz
-        self.nyq = 0.5 * self.fs  # Nyquist Frequency
-        self.order = 2       # sin wave can be approx represented as quadratic
-        self.n = int(self.T * self.fs) # total number of samples
+        
 
         self.buttonplay = self.findChild(QPushButton, "playButton")
         self.buttonplay.clicked.connect(self.clickedpBtn)
@@ -176,12 +171,46 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show()
 
     def butter_lowpass_filter(self,data): #Butterworth Filter
+        # Filter requirements.
+        
+        self.cutoff = 0.05     # desired cutoff frequency of the filter, Hz ,      slightly higher than actual 1.2 Hz
+        self.nyq = 0.5 * 1  # Nyquist Frequency
+        self.order = 4       
+        self.n = self.sigLength # total number of samples
+
         self.normal_cutoff = self.cutoff / self.nyq
         # Get the filter coefficients 
         b,a = butter(self.order, self.normal_cutoff, btype='lowpass', analog=False)
         y = filtfilt(b, a, data)
         return y
+    def butter_bandpass_filter(self,data):
+        # Filter requirements.
         
+        self.cutoff = 0.065     # desired cutoff frequency of the filter, Hz ,      slightly higher than actual 1.2 Hz
+        self.nyq = 0.5 * 0.5  # Nyquist Frequency
+        self.order = 2       
+        self.n = self.sigLength # total number of samples
+
+        self.normal_cutoff = self.cutoff / self.nyq
+        # Get the filter coefficients 
+        b,a = butter(self.order, self.normal_cutoff, btype='lowpass', analog=False)
+        y = filtfilt(b, a, data)
+        return y
+
+    def butter_highpass_filter(self,data):
+        # Filter requirements.
+        
+        self.cutoff = 0.05     # desired cutoff frequency of the filter, Hz ,      slightly higher than actual 1.2 Hz
+        self.nyq = 0.5 * 1  # Nyquist Frequency
+        self.order = 4       
+        self.n = self.sigLength # total number of samples
+
+        self.normal_cutoff = self.cutoff / self.nyq
+        # Get the filter coefficients 
+        b,a = butter(self.order, self.normal_cutoff, btype='lowpass', analog=False)
+        y = filtfilt(b, a, data)
+        return y
+
     def clickedbBtn(self): #Browse Button triggered
         self.filename = QFileDialog.getOpenFileName()[0]
         print(self.filename)
@@ -193,13 +222,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.record.adc(inplace = True)
         self.MaxY = max(self.d_signal[:][0]) #Maximum Y Value in the ECG File
         self.MinY = min(self.d_signal[:][0]) #Minimum Y Value in the ECG File
-
+        self.sigLength = self.record.sig_len #init signal length variable
+        
+        #Band Pass filter
+        self.band_signal = self.butter_bandpass_filter(self.d_signal)
         #Low Pass filter
         self.low_signal = self.butter_lowpass_filter(self.d_signal)
-
+        #High Pass filter
+        self.high_signal = self.butter_highpass_filter(self.d_signal)
+        
         print(self.record.sig_len) #Prints the length of the Original signal
-        self.sigLength = self.record.sig_len #init signal length variable
-
         self.CounterX = 0 #resets array counter whenever a new file is selected
 
         self.show
@@ -233,31 +265,34 @@ class MainWindow(QtWidgets.QMainWindow):
 
     
     def update_plot_data(self): #Live Data Plotting
-       if self.filename == None: #if no file is imported
+       #if self.filename == None: #if no file is imported
+        #self.x.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
+        #self.x1.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
+        #self.x2.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
+        #self.x3.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
 
-        self.x.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
-        self.x1.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
-        self.x2.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
-        self.x3.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
-
-
-        self.y.append(1)  # Add a new random value.
-        self.data_line.setData(self.x, self.y)  # Update the data.
-
-
-       else:
+        #self.y.append(1)  # Add a new random value.
+        #self.data_line.setData(self.x, self.y)  # Update the data.
+        
+       #else:
         self.CounterX +=1
         self.x.append(self.x[-1] + 1)
+        self.x1.append(self.x2[-1] + 1)
         self.x2.append(self.x2[-1] + 1)
+        self.x3.append(self.x2[-1] + 1)
 
         if self.sigLength > self.CounterX: #Updates 4 Lines, unfiltered, Smooth Filter, Low Pass Filter, High Pass Filter
                 self.y.append(self.record.d_signal[self.CounterX][0])
                 self.data_line.setData(self.x,self.y)
 
-                #self.y1.append(self.smoothfiltered)
-                #self.smooth_line.setData(self.x1,self.y1)
+                self.y1.append(self.band_signal[self.CounterX][0])
+                self.band_line.setData(self.x1,self.y1)
+
                 self.y2.append(self.low_signal[self.CounterX][0])
                 self.low_line.setData(self.x2,self.y2)
+
+                self.y3.append(self.high_signal[self.CounterX][0])
+                self.high_line.setData(self.x3,self.y3)
         
             
 def main():
