@@ -75,6 +75,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer.stop()
 
         #Defining Buttons and GUI Events
+        self.fs = 100
         self.MaxY = 100
         self.MinY = 0
         self.CounterX = 0
@@ -115,7 +116,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def sliderval1(self):
         print (self.verticalScrollBar.value())
-        self.graphWidget.setRange(yRange= (2*self.verticalScrollBar.value()-50,2*self.verticalScrollBar.value()))
+        self.graphWidget.setRange( yRange= (2*self.verticalScrollBar.value()-50,2*self.verticalScrollBar.value()))
         # self.graphWidget.translateBy(y=10*self.verticalScrollBar.value()) 
         
 
@@ -174,9 +175,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def butter_lowpass_filter(self,data): #Butterworth Filter
         # Filter requirements.
         
-        self.cutoff = 0.05     # desired cutoff frequency of the filter, Hz 
-        self.nyq = 0.5 * 1  # Nyquist Frequency
-        self.order = 4       
+        self.cutoff = 0.6   # desired cutoff frequency of the filter, Hz 
+        self.nyq = 0.5*self.fs  # Nyquist Frequency
+        self.order = 2       
         self.n = self.sigLength # total number of samples
 
         self.normal_cutoff = self.cutoff / self.nyq
@@ -187,13 +188,30 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def butter_bandpass_filter(self,data):
         # Filter requirements.
+        self.highcut = 0.0625     # desired cutoff frequency of the filter, Hz 
+        self.lowcut = 0.1
         
+        self.nyq = 0.5*self.fs  # Nyquist Frequency
+        self.order = 2       
+        self.n = self.sigLength # total number of samples
+
+        
+        # Get the filter coefficients 
+        b,a = butter(self.order, [self.lowcut/self.nyq , self.highcut/self.nyq], btype='bandpass', analog=False)
+        y = filtfilt(b, a, data)
         
         return y
 
     def butter_highpass_filter(self,data):
         # Filter requirements.
-        
+        self.cutoff2 = 0.065     # desired cutoff frequency of the filter, Hz 
+        self.nyq = 0.5*self.fs  # Nyquist Frequency
+        self.order = 2       
+        self.n = self.sigLength # total number of samples
+        self.normal_cutoff2 = self.cutoff2 / self.nyq
+        # Get the filter coefficients 
+        b,a = butter(self.order,self.normal_cutoff , btype='highpass', analog=False)
+        y = filtfilt(b, a, data)
         
         return y
 
@@ -218,6 +236,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.high_signal = self.butter_highpass_filter(self.d_signal)
         
         print(self.record.sig_len) #Prints the length of the Original signal
+        print(self.record.fs)
+        self.fs = self.record.fs
+        print(self.fs)
         self.CounterX = 0 #resets array counter whenever a new file is selected
 
         self.show
@@ -228,7 +249,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ZoominCount+=10
         print(self.ZoominCount)
         #buggy
-        self.graphWidget.setRange(xRange= (0,self.sigLength-self.ZoominCount))
+        self.graphWidget.setRange(xRange= (0,self.sigLength-100*self.ZoominCount))
         self.show
 
     def clickedzoomoutBtn(self):
