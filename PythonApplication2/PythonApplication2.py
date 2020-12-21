@@ -169,11 +169,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.timer.stop() 
 
         self.show()
+    #Filter Examples :https://www.programcreek.com/python/example/59508/scipy.signal.butter
 
     def butter_lowpass_filter(self,data): #Butterworth Filter
         # Filter requirements.
         
-        self.cutoff = 0.05     # desired cutoff frequency of the filter, Hz ,      slightly higher than actual 1.2 Hz
+        self.cutoff = 0.05     # desired cutoff frequency of the filter, Hz 
         self.nyq = 0.5 * 1  # Nyquist Frequency
         self.order = 4       
         self.n = self.sigLength # total number of samples
@@ -183,32 +184,17 @@ class MainWindow(QtWidgets.QMainWindow):
         b,a = butter(self.order, self.normal_cutoff, btype='lowpass', analog=False)
         y = filtfilt(b, a, data)
         return y
+
     def butter_bandpass_filter(self,data):
         # Filter requirements.
         
-        self.cutoff = 0.065     # desired cutoff frequency of the filter, Hz ,      slightly higher than actual 1.2 Hz
-        self.nyq = 0.5 * 0.5  # Nyquist Frequency
-        self.order = 2       
-        self.n = self.sigLength # total number of samples
-
-        self.normal_cutoff = self.cutoff / self.nyq
-        # Get the filter coefficients 
-        b,a = butter(self.order, self.normal_cutoff, btype='lowpass', analog=False)
-        y = filtfilt(b, a, data)
+        
         return y
 
     def butter_highpass_filter(self,data):
         # Filter requirements.
         
-        self.cutoff = 0.05     # desired cutoff frequency of the filter, Hz ,      slightly higher than actual 1.2 Hz
-        self.nyq = 0.5 * 1  # Nyquist Frequency
-        self.order = 4       
-        self.n = self.sigLength # total number of samples
-
-        self.normal_cutoff = self.cutoff / self.nyq
-        # Get the filter coefficients 
-        b,a = butter(self.order, self.normal_cutoff, btype='lowpass', analog=False)
-        y = filtfilt(b, a, data)
+        
         return y
 
     def clickedbBtn(self): #Browse Button triggered
