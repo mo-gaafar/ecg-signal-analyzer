@@ -5,4 +5,7 @@
 - Full Navigation features
 - Play/Pause Button
 - 3 Filtering Functions
+  * Low Pass
+  * High Pass
+  * Band Pass
 - Opens Any ECG .hea file
