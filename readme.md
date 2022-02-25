@@ -1,5 +1,6 @@
 # ECG Signal Analyzer
-## This was an assignment task for HEMN115 Fall 2020
+## This was an assignment task for HEMN115 Fall 2020 (Sophomore year)
+My first step into digital signal processing
 ### Features:
 - Fast Fourier Transform
 - Full Navigation features
