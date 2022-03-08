@@ -27,7 +27,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.x = list(range(1))  
         self.y = list(range(1))  
-        
+
         self.x1 = list(range(1))
         self.y1 = list(range(1))
 
@@ -67,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         #Shows the grid
         self.graphWidget.showGrid(x=1,y=1)
-        
+
         #Auto Pans with x value = 100
 
         self.graphWidget.setAutoPan(x=100, y=None)
@@ -84,7 +84,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.sigLength = 100
         self.filterIndex = 0
 
-        
+
 
         self.buttonplay = self.findChild(QPushButton, "playButton")
         self.buttonplay.clicked.connect(self.clickedpBtn)
@@ -118,12 +118,12 @@ class MainWindow(QtWidgets.QMainWindow):
         print (self.verticalScrollBar.value())
         self.graphWidget.setRange( yRange= (2*self.verticalScrollBar.value()-50,2*self.verticalScrollBar.value()))
         # self.graphWidget.translateBy(y=10*self.verticalScrollBar.value()) 
-        
+
 
     def sliderval2(self):
         print(self.horizontalScrollBar.value())
         self.graphWidget.setRange(xRange= ((self.CounterX/100)*self.horizontalScrollBar.value(),(self.CounterX/100)*self.horizontalScrollBar.value()+100))
-    
+
     def plot_hide(self): #Shows the relevant Data Lines
        if self.filterIndex == 0:
             self.data_line.show()
@@ -148,14 +148,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.band_line.hide()
             self.low_line.hide()
             self.high_line.show()
-            
+
     def clickedfilterBtn(self): #Shows Desired Filter Plot
         self.filterIndex = self.comboFilter.currentIndex()
         print("filter number:",self.filterIndex," applied!")
         self.plot_hide()
 
     def clickedpBtn(self):
-      
+
         # if button is checked 
         if self.buttonplay.isChecked():   
             print("started")
@@ -174,7 +174,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def butter_lowpass_filter(self,data): #Butterworth Filter
         # Filter requirements.
-        
+
         self.cutoff = 0.6   # desired cutoff frequency of the filter, Hz 
         self.nyq = 0.5*self.fs  # Nyquist Frequency
         self.order = 2       
@@ -190,16 +190,16 @@ class MainWindow(QtWidgets.QMainWindow):
         # Filter requirements.
         self.highcut = 0.0625     # desired cutoff frequency of the filter, Hz 
         self.lowcut = 0.1
-        
+
         self.nyq = 0.5*self.fs  # Nyquist Frequency
         self.order = 2       
         self.n = self.sigLength # total number of samples
 
-        
+
         # Get the filter coefficients 
         b,a = butter(self.order, [self.lowcut/self.nyq , self.highcut/self.nyq], btype='bandpass', analog=False)
         y = filtfilt(b, a, data)
-        
+
         return y
 
     def butter_highpass_filter(self,data):
@@ -212,7 +212,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Get the filter coefficients 
         b,a = butter(self.order,self.normal_cutoff , btype='highpass', analog=False)
         y = filtfilt(b, a, data)
-        
+
         return y
 
     def clickedbBtn(self): #Browse Button triggered
@@ -227,14 +227,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.MaxY = max(self.d_signal[:][0]) #Maximum Y Value in the ECG File
         self.MinY = min(self.d_signal[:][0]) #Minimum Y Value in the ECG File
         self.sigLength = self.record.sig_len #init signal length variable
-        
+
         #Band Pass filter
         self.band_signal = self.butter_bandpass_filter(self.d_signal)
         #Low Pass filter
         self.low_signal = self.butter_lowpass_filter(self.d_signal)
         #High Pass filter
         self.high_signal = self.butter_highpass_filter(self.d_signal)
-        
+
         print(self.record.sig_len) #Prints the length of the Original signal
         print(self.record.fs)
         self.fs = self.record.fs
@@ -242,7 +242,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.CounterX = 0 #resets array counter whenever a new file is selected
 
         self.show
-    
+
 
     def clickedzoominBtn(self):
         print("zoomin")
@@ -270,7 +270,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.graphWidget.autoRange()
             self.graphWidget.setAutoPan(x=100, y=None)
 
-    
+
     def update_plot_data(self): #Live Data Plotting
        #if self.filename == None: #if no file is imported
         #self.x.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
@@ -280,7 +280,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         #self.y.append(1)  # Add a new random value.
         #self.data_line.setData(self.x, self.y)  # Update the data.
-        
+
        #else:
         self.CounterX +=1
         self.x.append(self.x[-1] + 1)
@@ -300,8 +300,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 self.y3.append(self.high_signal[self.CounterX][0])
                 self.high_line.setData(self.x3,self.y3)
-        
-            
+
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
     main = MainWindow()
